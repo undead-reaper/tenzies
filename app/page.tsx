@@ -2,12 +2,22 @@
 
 import Die from "@/components/Die";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { DicesIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [diceValues, setdieValues] = useState<number[]>([
+  const [diceValues, setDiceValues] = useState<number[]>([
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ]);
+
+  function generateNewDice() {
+    const newDice = Array.from({ length: 10 }, () =>
+      Math.ceil(Math.random() * 6)
+    );
+    setDiceValues(newDice);
+  }
+
+  useEffect(() => generateNewDice(), []);
 
   return (
     <main className="flex flex-col items-center justify-center-safe p-5 bg-background h-screen">
@@ -22,7 +32,10 @@ export default function Home() {
             return <Die key={index} value={value} />;
           })}
         </div>
-        <Button>Roll</Button>
+        <Button onClick={generateNewDice}>
+          <DicesIcon />
+          Roll
+        </Button>
       </div>
     </main>
   );
