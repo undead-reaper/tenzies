@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { DicesIcon, Loader2, PartyPopper } from "lucide-react";
 import { nanoid } from "nanoid";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Confetti from "react-confetti";
 import { useIsMounted } from "@/lib/utils";
 
@@ -28,6 +28,7 @@ export default function Home() {
     return dice;
   });
   const [gameWon, setGameWon] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!diceValues.length) return;
@@ -38,6 +39,7 @@ export default function Home() {
 
     if (allHeld && allSameValue) {
       setGameWon(true);
+      buttonRef.current!.focus();
     }
   }, [diceValues]);
 
@@ -75,6 +77,11 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center justify-center-safe p-5 bg-background h-screen">
       {gameWon && <Confetti />}
+      <div aria-live="polite" className="sr-only">
+        {gameWon && (
+          <p>Congratulations! You won! Press "New Game" to start again</p>
+        )}
+      </div>
       <div className="bg-muted w-[100%] aspect-square rounded-2xl max-w-[400px] max-h-[400px] flex flex-col items-center justify-center-safe p-[2rem]">
         <h1 className="font-bold text-[1.5rem]">Tenzies</h1>
         <p className="text-center pt-[0.4rem] pb-[1.8rem] text-muted-foreground">
@@ -86,7 +93,7 @@ export default function Home() {
             <Die key={die.id} content={die} onClick={handleHoldDice} />
           ))}
         </div>
-        <Button onClick={handleRollDice}>
+        <Button ref={buttonRef} onClick={handleRollDice}>
           {gameWon ? <PartyPopper /> : <DicesIcon />}
           {gameWon ? "New Game" : "Roll"}
         </Button>
